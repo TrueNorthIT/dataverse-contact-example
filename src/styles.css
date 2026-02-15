@@ -1,0 +1,317 @@
+/* ── Reset & base ────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --border: #2a2d3a;
+  --text: #e4e4e7;
+  --muted: #71717a;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --success: #22c55e;
+  --error: #ef4444;
+  --radius: 10px;
+  --font: "Inter", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ──────────────────────────────────────────────── */
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.card h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--accent-hover);
+}
+
+.card.hero {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.card.hero p {
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+}
+
+.card.loading,
+.card.error {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.card.error {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* ── Typography ──────────────────────────────────────────── */
+
+code,
+pre {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+
+code {
+  background: rgba(99, 102, 241, 0.12);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  color: var(--accent-hover);
+}
+
+pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  margin-top: 0.75rem;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1rem;
+}
+
+dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+dd {
+  font-size: 0.9rem;
+}
+
+details {
+  margin-top: 1rem;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.empty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.success {
+  color: var(--success);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+p.error {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Tables ──────────────────────────────────────────────── */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Forms ───────────────────────────────────────────────── */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+input,
+textarea {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+
+button {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+button:hover {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* ── Chips ───────────────────────────────────────────────── */
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+}
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.schema-detail {
+  margin-top: 0.75rem;
+}
+
+.schema-detail p {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
