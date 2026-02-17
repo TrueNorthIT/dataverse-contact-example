@@ -1,6 +1,27 @@
+/**
+ * CaseList — fetch and display the current user's cases.
+ *
+ * Demonstrates `client.me.list<T>(table, options)`:
+ *   - `select`  — pick only the columns you need (reduces payload)
+ *   - `top`     — limit the number of rows returned (1–100)
+ *   - `orderBy` — sort by any field; append `:desc` for descending
+ *
+ * Other handy options you can try (not shown here):
+ *   - `filter`      — OData-style filter, e.g. "statuscode eq 1"
+ *   - `skip`        — pagination offset
+ *   - `created`     — quick date filter: "today", "7d", "thismonth"
+ *   - `expand`      — include related lookups in the response
+ *
+ * See the full list of query options in the @truenorth-it/dataverse-client README.
+ */
+
 import { useEffect, useState } from "react";
 import { useDataverse } from "../useDataverse";
 
+// Tip: You can auto-generate these interfaces from your API schema!
+// Run:  npx dataverse-client generate --url https://your-api.vercel.app
+// This creates a .generated.ts file with typed interfaces for every
+// table, so you never have to write them by hand.
 interface Case {
   incidentid: string;
   title: string;
@@ -16,6 +37,8 @@ export default function CaseList() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch up to 10 cases for the logged-in contact, newest first.
+    // The generic <Case> gives you autocomplete on `res.data`.
     client.me
       .list<Case>("case", {
         select: ["title", "ticketnumber", "statuscode", "createdon"],
