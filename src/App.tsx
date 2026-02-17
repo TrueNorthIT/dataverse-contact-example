@@ -25,12 +25,23 @@ export default function App() {
   const { isAuthenticated, isLoading, loginWithRedirect, logout, user } =
     useAuth0();
 
-  // refreshKey forces CaseList and CreateCase to remount after a new
-  // case is created, so the list is always up-to-date.
+  // refreshKey forces CaseList to remount after a new case is created,
+  // so the list is always up-to-date.
   const [refreshKey, setRefreshKey] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleCreated = useCallback(
     () => setRefreshKey((k) => k + 1),
+    []
+  );
+
+  const handleCloseModal = useCallback(
+    () => setModalOpen(false),
+    []
+  );
+
+  const handleOpenModal = useCallback(
+    () => setModalOpen(true),
     []
   );
 
@@ -88,8 +99,12 @@ export default function App() {
       {/* Each component below demonstrates a single SDK capability.
           They are intentionally simple — the SDK does the heavy lifting. */}
       <WhoAmI />
-      <CaseList key={refreshKey} />
-      <CreateCase key={refreshKey} onCreated={handleCreated} />
+      <CaseList key={refreshKey} onCreateClick={handleOpenModal} />
+      <CreateCase
+        open={modalOpen}
+        onClose={handleCloseModal}
+        onCreated={handleCreated}
+      />
       <SchemaExplorer />
     </div>
   );
