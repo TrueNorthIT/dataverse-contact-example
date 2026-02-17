@@ -1,3 +1,11 @@
+/**
+ * WhoAmI — display the authenticated user's Dataverse identity.
+ *
+ * Uses `client.me.whoami()` which returns the contact record linked
+ * to the logged-in user.  This is the simplest possible API call —
+ * no table name, no query options, just "who am I?".
+ */
+
 import { useEffect, useState } from "react";
 import { useDataverse } from "../useDataverse";
 
@@ -13,6 +21,8 @@ export default function WhoAmI() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // One line is all it takes to fetch the current user's identity.
+    // The SDK attaches the Bearer token and parses the JSON response.
     client.me
       .whoami()
       .then((res) => setIdentity(res as Identity))
@@ -35,6 +45,8 @@ export default function WhoAmI() {
           <code>{identity.contactid}</code>
         </dd>
       </dl>
+      {/* The raw JSON is handy for debugging — expand to see exactly
+          what the API returns. */}
       <details>
         <summary>Raw response</summary>
         <pre>{JSON.stringify(identity, null, 2)}</pre>
