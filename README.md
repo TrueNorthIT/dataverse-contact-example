@@ -44,7 +44,7 @@ npm run dev
 | `VITE_AUTH0_DOMAIN` | Your Auth0 tenant (e.g. `my-tenant.auth0.com`) |
 | `VITE_AUTH0_CLIENT_ID` | Auth0 SPA application client ID |
 | `VITE_AUTH0_AUDIENCE` | API audience (e.g. `https://dataverse-api`) |
-| `VITE_API_BASE_URL` | Base URL of your deployed API (e.g. `https://your-api.vercel.app`) |
+| `VITE_API_BASE_URL` | Base URL of your deployed API (e.g. `https://api.dataverse-contact.tnapps.co.uk/`) |
 
 ## Auth0 setup
 
@@ -67,7 +67,7 @@ The `@truenorth-it/dataverse-client` package includes a CLI that reads your API'
 
 ```bash
 # Generate types from your deployed API
-npx dataverse-client generate --url https://your-api.vercel.app
+npx dataverse-client generate --url https://api.dataverse-contact.tnapps.co.uk
 ```
 
 This creates `dataverse-tables.generated.ts` in the current directory containing typed interfaces for every table your API exposes.
@@ -86,7 +86,7 @@ This creates `dataverse-tables.generated.ts` in the current directory containing
 
 ```bash
 npx dataverse-client generate \
-  --url https://your-api.vercel.app \
+  --url https://api.dataverse-contact.tnapps.co.uk/ \
   --output ./src/types/dataverse.generated.ts
 ```
 
@@ -97,7 +97,7 @@ A common pattern is to regenerate types as a pre-build step so they stay in sync
 ```jsonc
 // package.json
 {
-  "scripts": {
+  "scripts": {  
     "generate:types": "dataverse-client generate --url $API_URL",
     "prebuild": "npm run generate:types",
     "build": "tsc -b && vite build"
@@ -113,7 +113,7 @@ If you need more control, you can call the generator from code:
 import { generateTableTypes } from "@truenorth-it/dataverse-client";
 
 // Fetch the schema from your API
-const response = await fetch("https://your-api.vercel.app/api/v2/default/schema");
+const response = await fetch("https://api.dataverse-contact.tnapps.co.uk/api/v2/default/schema");
 const schema = await response.json();
 
 // Generate the TypeScript source
@@ -142,7 +142,7 @@ import { createClient } from "@truenorth-it/dataverse-client";
 // Two lines to create a fully-configured client.
 // getToken is called automatically before every request.
 const client = createClient({
-  baseUrl: "https://your-api.vercel.app",
+  baseUrl: "https://api.dataverse-contact.tnapps.co.uk",
   getToken: () => auth0.getAccessTokenSilently(),
 });
 
