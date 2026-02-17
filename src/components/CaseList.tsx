@@ -16,19 +16,8 @@
  */
 
 import { useEffect, useState } from "react";
+import type { Case } from "../dataverse-tables.generated";
 import { useDataverse } from "../useDataverse";
-
-// Tip: You can auto-generate these interfaces from your API schema!
-// Run:  npx dataverse-client generate --url https://your-api.vercel.app
-// This creates a .generated.ts file with typed interfaces for every
-// table, so you never have to write them by hand.
-interface Case {
-  incidentid: string;
-  title: string;
-  ticketnumber: string;
-  statuscode: number;
-  createdon: string;
-}
 
 export default function CaseList() {
   const client = useDataverse();
@@ -76,7 +65,7 @@ export default function CaseList() {
                 </td>
                 <td>{c.title}</td>
                 <td>{c.statuscode}</td>
-                <td>{new Date(c.createdon).toLocaleDateString()}</td>
+                <td>{c.createdon ? new Date(c.createdon).toLocaleDateString() : "—"}</td>
               </tr>
             ))}
           </tbody>

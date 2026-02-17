@@ -7,17 +7,12 @@
  */
 
 import { useEffect, useState } from "react";
+import type { WhoamiResponse } from "@truenorth-it/dataverse-client";
 import { useDataverse } from "../useDataverse";
-
-interface Identity {
-  email: string;
-  fullname?: string;
-  contactid: string;
-}
 
 export default function WhoAmI() {
   const client = useDataverse();
-  const [identity, setIdentity] = useState<Identity | null>(null);
+  const [identity, setIdentity] = useState<WhoamiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,7 +20,7 @@ export default function WhoAmI() {
     // The SDK attaches the Bearer token and parses the JSON response.
     client.me
       .whoami()
-      .then((res) => setIdentity(res as Identity))
+      .then((res) => setIdentity(res))
       .catch((err: Error) => setError(err.message));
   }, [client]);
 
