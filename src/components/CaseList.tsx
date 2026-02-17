@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import type { Case } from "../dataverse-tables.generated";
 import { useDataverse } from "../useDataverse";
 
-export default function CaseList() {
+export default function CaseList({ onCreateClick }: { onCreateClick?: () => void }) {
   const client = useDataverse();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +44,14 @@ export default function CaseList() {
 
   return (
     <div className="card">
-      <h2>My Cases</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="!mb-0">My Cases</h2>
+        {onCreateClick && (
+          <button className="primary" onClick={onCreateClick}>
+            + Create Case
+          </button>
+        )}
+      </div>
       {cases.length === 0 ? (
         <p className="empty">No cases found. Create one below!</p>
       ) : (
