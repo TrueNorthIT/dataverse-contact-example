@@ -21,16 +21,8 @@
  */
 
 import { useEffect, useState } from "react";
+import type { TableSchema } from "@truenorth-it/dataverse-client";
 import { useDataverse } from "../useDataverse";
-
-interface TableSchema {
-  name: string;
-  endpoint: string;
-  permission: string;
-  primaryKey: string;
-  defaultFields: string[];
-  fields: { name: string; type: string; label?: string }[];
-}
 
 export default function SchemaExplorer() {
   const client = useDataverse();
@@ -46,7 +38,7 @@ export default function SchemaExplorer() {
       .schema()
       .then((res) => {
         const list = Array.isArray(res) ? res : [res];
-        setTables(list as TableSchema[]);
+        setTables(list);
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
@@ -88,7 +80,7 @@ export default function SchemaExplorer() {
               <tr>
                 <th>Field</th>
                 <th>Type</th>
-                <th>Label</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +90,7 @@ export default function SchemaExplorer() {
                     <code>{f.name}</code>
                   </td>
                   <td>{f.type}</td>
-                  <td>{f.label ?? "—"}</td>
+                  <td>{f.description ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
