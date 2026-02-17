@@ -65,7 +65,7 @@ export default function App() {
 
       <WhoAmI />
       <CaseList key={refreshKey} />
-      <CreateCase onCreated={handleCreated} />
+      <CreateCase key={refreshKey} onCreated={handleCreated} />
       <SchemaExplorer />
     </div>
   );

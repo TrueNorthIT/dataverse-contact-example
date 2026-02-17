@@ -3,27 +3,22 @@ import { useDataverse } from "../useDataverse";
 
 export default function CreateCase({ onCreated }: { onCreated?: () => void }) {
   const client = useDataverse();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<"idle" | "saving" | "done" | "error">(
-    "idle"
-  );
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("saving");
-    setError(null);
-
+    setSaving(true);
     try {
-      await client.me.create("case", { title, description });
-      setTitle("");
-      setDescription("");
-      setStatus("done");
+      const data = new FormData(e.currentTarget);
+      await client.me.create("case", {
+        title: data.get("title") as string,
+        description: data.get("description") as string,
+      });
       onCreated?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
-      setStatus("error");
+      setSaving(false);
     }
   }
 
@@ -34,9 +29,8 @@ export default function CreateCase({ onCreated }: { onCreated?: () => void }) {
         <label>
           Title
           <input
+            name="title"
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Cannot access dashboard"
             required
           />
@@ -44,17 +38,15 @@ export default function CreateCase({ onCreated }: { onCreated?: () => void }) {
         <label>
           Description
           <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            name="description"
             placeholder="Describe the issue..."
             rows={3}
           />
         </label>
-        <button type="submit" disabled={status === "saving"}>
-          {status === "saving" ? "Creating..." : "Create Case"}
+        <button type="submit" disabled={saving}>
+          {saving ? "Creating..." : "Create Case"}
         </button>
-        {status === "done" && <p className="success">Case created!</p>}
-        {status === "error" && <p className="error">{error}</p>}
+        {error && <p className="error">{error}</p>}
       </form>
     </div>
   );
