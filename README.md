@@ -1,13 +1,13 @@
 # Dataverse Contact API — Example
 
-A tiny React + TypeScript demo showing how to use [`@truenorth-it/dataverse-client`](https://www.npmjs.com/package/@truenorth-it/dataverse-client) with Auth0.
+A tiny React + TypeScript demo showing how to use [`@truenorth-it/dataverse-client`](https://www.npmjs.com/package/@truenorth-it/dataverse-client) with Microsoft Entra External ID.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/TrueNorthIT/dataverse-contact-example)
 
 <!-- This project is designed to show how little code you need to talk to
      Dataverse.  The entire API layer is a single hook (useDataverse.ts)
-     and each component is a single SDK call.  No OData, no MSAL, no
-     Azure AD plumbing — just JSON in, JSON out. -->
+     and each component is a single SDK call.  No OData and no Microsoft
+     Graph plumbing — MSAL just hands the SDK a token; JSON in, JSON out. -->
 
 ## What's inside
 
@@ -18,7 +18,7 @@ A tiny React + TypeScript demo showing how to use [`@truenorth-it/dataverse-clie
 | `CreateCase` | Creates a new case with `client.me.create("case", { ... })` |
 | `SchemaExplorer` | Browses table metadata with `client.schema()` |
 
-All four components share a single `useDataverse()` hook that wraps `createClient` with the Auth0 token.
+All four components share a single `useDataverse()` hook that wraps `createClient` with the MSAL access token.
 
 ## Quick start
 
@@ -32,7 +32,7 @@ Click the button above — StackBlitz will clone this repo, install deps, and st
 git clone https://github.com/TrueNorthIT/dataverse-contact-example.git
 cd dataverse-contact-example
 cp .env.example .env
-# Fill in your Auth0 + API values in .env
+# Fill in your Entra External ID + API values in .env
 npm install
 npm run dev
 ```
@@ -41,18 +41,18 @@ npm run dev
 
 | Variable | Description |
 |----------|-------------|
-| `VITE_AUTH0_DOMAIN` | Your Auth0 tenant (e.g. `my-tenant.auth0.com`) |
-| `VITE_AUTH0_CLIENT_ID` | Auth0 SPA application client ID |
-| `VITE_AUTH0_AUDIENCE` | API audience (e.g. `https://dataverse-api`) |
-| `VITE_API_BASE_URL` | Base URL of your deployed API (e.g. `https://api.dataverse-contact.tnapps.co.uk/`) |
+| `VITE_ENTRA_TENANT_ID` | Your Entra External ID tenant ID (GUID) |
+| `VITE_ENTRA_CLIENT_ID` | SPA application client ID |
+| `VITE_ENTRA_API_SCOPE` | API access scope (e.g. `api://<api-app-id>/access_as_user`) |
+| `VITE_API_BASE_URL` | Base URL of your deployed API (defaults to `https://api.dataverse-contact.tnapps.co.uk`) |
 
-## Auth0 setup
+## Microsoft Entra External ID setup
 
-For StackBlitz, add these to your Auth0 SPA application settings:
+Register a SPA application in your Entra External ID (CIAM) tenant and grant it
+the API's access scope. For StackBlitz, add the StackBlitz origin as a redirect
+URI on the SPA app registration:
 
-- **Allowed Callback URLs:** `https://*.stackblitz.io`
-- **Allowed Logout URLs:** `https://*.stackblitz.io`
-- **Allowed Web Origins:** `https://*.stackblitz.io`
+- **Redirect URIs (SPA platform):** `https://*.stackblitz.io`
 
 ## Generating TypeScript types from your schema
 
@@ -143,7 +143,9 @@ import { createClient } from "@truenorth-it/dataverse-client";
 // getToken is called automatically before every request.
 const client = createClient({
   baseUrl: "https://api.dataverse-contact.tnapps.co.uk",
-  getToken: () => auth0.getAccessTokenSilently(),
+  getToken: async () =>
+    (await msalInstance.acquireTokenSilent({ scopes: [apiScope], account }))
+      .accessToken,
 });
 
 // Identity — "who is the logged-in user?"

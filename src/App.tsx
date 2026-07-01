@@ -9,21 +9,24 @@
  *   CreateCase     -> client.me.create()
  *   SchemaExplorer -> client.schema()
  *
- * Notice that none of these components import Auth0 directly — they
+ * Notice that none of these components import MSAL directly — they
  * all go through the shared useDataverse() hook, keeping auth concerns
  * in a single place.
  */
 
-import { useAuth0 } from "@auth0/auth0-react";
+import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { useState, useCallback } from "react";
+import { accountToUser, config } from "./env";
 import WhoAmI from "./components/WhoAmI";
 import CaseList from "./components/CaseList";
 import CreateCase from "./components/CreateCase";
 import SchemaExplorer from "./components/SchemaExplorer";
 
 export default function App() {
-  const { isAuthenticated, isLoading, loginWithRedirect, logout, user } =
-    useAuth0();
+  const { instance, accounts, inProgress } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
+  const isLoading = inProgress !== "none";
+  const user = accountToUser(instance.getActiveAccount() ?? accounts[0]);
 
   // refreshKey forces CaseList to remount after a new case is created,
   // so the list is always up-to-date.
@@ -49,7 +52,7 @@ export default function App() {
   if (isLoading) {
     return (
       <div className="container">
-        <div className="card loading">Initialising Auth0...</div>
+        <div className="card loading">Initialising Microsoft Entra External ID...</div>
       </div>
     );
   }
@@ -65,10 +68,16 @@ export default function App() {
         <div className="card hero">
           <p>
             This demo shows how to use{" "}
-            <code>@truenorth-it/dataverse-client</code> with React and Auth0 to
-            interact with a Dataverse Contact API.
+            <code>@truenorth-it/dataverse-client</code> with React and
+            Microsoft Entra External ID to interact with a Dataverse Contact
+            API.
           </p>
-          <button className="primary" onClick={() => loginWithRedirect()}>
+          <button
+            className="primary"
+            onClick={() =>
+              instance.loginRedirect({ scopes: [config.entra.apiScope] })
+            }
+          >
             Log in to get started
           </button>
         </div>
@@ -86,11 +95,7 @@ export default function App() {
         </div>
         <div className="user-info">
           <span>{user?.email}</span>
-          <button
-            onClick={() =>
-              logout({ logoutParams: { returnTo: window.location.origin } })
-            }
-          >
+          <button onClick={() => instance.logoutRedirect()}>
             Log out
           </button>
         </div>
