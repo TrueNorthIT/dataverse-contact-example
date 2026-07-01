@@ -7,33 +7,51 @@
  *   1. baseUrl  — the URL where your Dataverse API is deployed
  *   2. getToken — an async function that returns a Bearer token
  *
- * That's it.  No Microsoft SDK, no MSAL, no Azure AD config.
- * The client handles authorization headers, pagination, error
- * mapping, and JSON parsing for you.
+ * That's it.  The SDK never sees MSAL or Entra config — it just calls
+ * getToken() before each request.  The client handles authorization
+ * headers, pagination, error mapping, and JSON parsing for you.
  */
 
 import { useMemo } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { InteractionRequiredAuthError } from "@azure/msal-browser";
+import { useMsal } from "@azure/msal-react";
 import { createClient } from "@truenorth-it/dataverse-client";
-
-// Your deployed API URL — set in .env (see .env.example).
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+import { config } from "./env";
 
 export function useDataverse() {
-  const { getAccessTokenSilently } = useAuth0();
+  const { instance, accounts } = useMsal();
 
   // useMemo ensures we create the client once and reuse it, avoiding
   // unnecessary re-creation on every render.
   const client = useMemo(
     () =>
       createClient({
-        baseUrl,
+        baseUrl: config.apiBaseUrl,
         // getToken is called automatically before each API request.
-        // Auth0's getAccessTokenSilently() returns a cached token or
-        // silently refreshes it — the SDK never sees auth complexity.
-        getToken: () => getAccessTokenSilently(),
+        // MSAL's acquireTokenSilent() returns a cached token or silently
+        // refreshes it; if interaction is required (e.g. consent or an
+        // expired session) we fall back to an interactive redirect.
+        getToken: async () => {
+          const account = instance.getActiveAccount() ?? accounts[0];
+          if (!account) throw new Error("Not signed in");
+          try {
+            const result = await instance.acquireTokenSilent({
+              scopes: [config.entra.apiScope],
+              account,
+            });
+            return result.accessToken;
+          } catch (err) {
+            if (err instanceof InteractionRequiredAuthError) {
+              await instance.acquireTokenRedirect({
+                scopes: [config.entra.apiScope],
+                account,
+              });
+            }
+            throw err;
+          }
+        },
       }),
-    [getAccessTokenSilently]
+    [instance, accounts]
   );
 
   return client;
